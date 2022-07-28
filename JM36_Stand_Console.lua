@@ -50,18 +50,19 @@ local Loop <const> =
 {
 	--[[ Logs Display ]]
 	wrap(function()
+		
+		local string_gmatch <const> = string.gmatch
+		local string_split <const> = function(inputstr,sep)
+			local sep <const> = sep or "%s" local t <const>, n = {}, 0
+			for str in string_gmatch(inputstr, "([^"..sep.."]+)") do
+				n=n+1 t[n]=str
+			end
+		return t end
+		
 		--[[ Read ini config ]]
 		local config_RegExHighlightRed
 		do
 
-			local string_gmatch <const> = string.gmatch
-			local string_split <const> = function(inputstr,sep)
-				local sep <const> = sep or "%s" local t <const>, n = {}, 0
-				for str in string_gmatch(inputstr, "([^"..sep.."]+)") do
-					n=n+1 t[n]=str
-				end
-			return t end
-			
 			local config <const>, configFile <const> = {}, io.open("JM36_Stand_Console.ini")
 			if configFile then
 				local string_gsub <const> = string.gsub
@@ -128,9 +129,12 @@ local Loop <const> =
 		
 		
 		--[[ Loop ]]
+		local LastHostilePrint
+		local table_concat <const> = table.concat
+		local table_remove <const> = table.remove
 		local yield <const> = yield
 		while true do
---			if IsOpen_GTA then
+			if IsOpen_GTA then
 				for line in logFileStand:lines() do
 					local Hostile
 					for i=1, config_RegExHighlightRedNum do
@@ -141,13 +145,24 @@ local Loop <const> =
 					if not Hostile then
 						print(line)
 					else
-						ColorRed() print(line) ColorDefault()
+						if string_find(line, " from ") then
+							line = string_split(line, ": ")[1]
+						end
+						
+						local lineInfo = string_split(line, "] ")
+						table_remove(lineInfo, 1)
+						lineInfo = table_concat(lineInfo, "] ")
+						
+						if lineInfo ~= LastHostilePrint then
+							ColorRed() print(line) ColorDefault()
+							LastHostilePrint = lineInfo
+						end
 					end
 				end
 				for line in logFileStandChat:lines() do
 					print(line)
 				end
---			end
+			end
 			yield()
 		end
 	end),
