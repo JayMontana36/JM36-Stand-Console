@@ -184,6 +184,8 @@ local Loop <const> =
 					ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Running Solo | Press [ENTER] To Recommence", os_date()), "\n") ColorDefault()
 					if not io.read() then os.exit() end
 					ColorGreen() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Resumed", os_date()), "\n") ColorDefault()
+				else
+					ColorGreen() Print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Found Grand Theft Auto V", os_date()), "\n") ColorDefault()
 				end
 				WasOpen_GTA = IsOpen_GTA
 			end
