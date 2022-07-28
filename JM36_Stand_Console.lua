@@ -1,6 +1,6 @@
 --[[ Init - Localize Functions ]]
-local io_write, os_execute, print, string_format, os_date, io_open, string_gmatch, string_gsub, io_popen, string_find, io_read, os_exit
-	= io.write, os.execute, print, string.format, os.date, io.open, string.gmatch, string.gsub, io.popen, string.find, io.read, os.exit
+local io_write, print, string_format, os_date, io_open, io_popen, string_find
+	= io.write, print, string.format, os.date, io.open, io.popen, string.find
 
 
 
@@ -38,7 +38,7 @@ end
 
 
 --[[ Init - Startup ]]
-ColorDefault() os_execute("cls && title JM36 Stand Console")
+ColorDefault() os.execute("cls && title JM36 Stand Console")
 ColorBlue() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Started", os_date()), "\n") ColorDefault()
 
 
@@ -49,7 +49,7 @@ do
 	
 	local function string_split(inputstr,sep)
 		sep = sep or "%s" local t,n={},0
-		for str in string_gmatch(inputstr, "([^"..sep.."]+)") do
+		for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
 			n=n+1 t[n]=str
 		end
 	return t end
@@ -64,8 +64,8 @@ do
 		end
 		for line in configFile:lines() do
 			if not (string_startsWith(line, "[") and string_endsWith(line, "]")) then
-				line = string_gsub(line, "\n", "")
-				line = string_gsub(line, "\r", "")
+				line = string.gsub(line, "\n", "")
+				line = string.gsub(line, "\r", "")
 				if line ~= "" and string_find(line, "=") then
 					line = string_split(line, "=")
 					config[line[1]] = line[2]
@@ -97,7 +97,7 @@ local Loop =
 		local config_StandDirGTA
 		do
 			local _config_StandDirGTA = io_popen("powershell [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)")
-			config_StandDirGTA = string_gsub(_config_StandDirGTA:read("*a"), "\n", "").."\\Stand\\"
+			config_StandDirGTA = string.gsub(_config_StandDirGTA:read("*a"), "\n", "").."\\Stand\\"
 			_config_StandDirGTA:close()
 		end
 		local logFileStand, logFileStandChat = io_open(config_StandDirGTA.."Log.txt"), io_open(config_StandDirGTA.."Chat.txt")
@@ -142,7 +142,7 @@ local Loop =
 					ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Lost Grand Theft Auto V", os_date()), "\n") ColorDefault()
 					
 					ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Running Solo | Press [ENTER] To Recommence", os_date()), "\n") ColorDefault()
-					if not io_read() then os_exit() end
+					if not io.read() then os.exit() end
 					ColorGreen() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Resumed", os_date()), "\n") ColorDefault()
 				end
 				WasOpen_GTA = IsOpen_GTA
