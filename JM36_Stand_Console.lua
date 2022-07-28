@@ -129,34 +129,34 @@ local Loop <const> =
 		
 		
 		--[[ Loop ]]
-		local LastHostilePrint
+		local lineLastPrint
 		local table_concat <const> = table.concat
 		local table_remove <const> = table.remove
 		local yield <const> = yield
 		while true do
 			if IsOpen_GTA then
 				for line in logFileStand:lines() do
-					local Hostile
-					for i=1, config_RegExHighlightRedNum do
-						if string_find(line, config_RegExHighlightRed[i]) then
-							Hostile = true
-						break end
+					if string_find(line, " from ") then
+						line = string_split(line, ": ")[1]
 					end
-					if not Hostile then
-						print(line)
-					else
-						if string_find(line, " from ") then
-							line = string_split(line, ": ")[1]
+					
+					local lineInfo = string_split(line, "] ")
+					table_remove(lineInfo, 1)
+					lineInfo = table_concat(lineInfo, "] ")
+					
+					if lineInfo ~= lineLastPrint then
+						local Hostile
+						for i=1, config_RegExHighlightRedNum do
+							if string_find(line, config_RegExHighlightRed[i]) then
+								Hostile = true
+							break end
 						end
-						
-						local lineInfo = string_split(line, "] ")
-						table_remove(lineInfo, 1)
-						lineInfo = table_concat(lineInfo, "] ")
-						
-						if lineInfo ~= LastHostilePrint then
+						if not Hostile then
+							print(line)
+						else
 							ColorRed() print(line) ColorDefault()
-							LastHostilePrint = lineInfo
 						end
+						lineLastPrint = lineInfo
 					end
 				end
 				for line in logFileStandChat:lines() do
