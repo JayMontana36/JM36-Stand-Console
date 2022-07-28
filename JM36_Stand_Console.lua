@@ -44,46 +44,41 @@ ColorBlue() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Sta
 
 
 --[[ Read ini config ]]
-local function string_endsWith(str, ending)
-	return ending == "" or str:sub(-#ending) == ending
-end
-local function string_split(inputstr,sep)
-	sep = sep or "%s" local t,n={},0
-	for str in string_gmatch(inputstr, "([^"..sep.."]+)") do
-		n=n+1 t[n]=str
-	end
-return t end
-local config, configFile = {}, io_open("JM36_Stand_Console.ini")
-if configFile then
-	local function string_startsWith(str, start)
-		return str:sub(1, #start) == start
-	end
-	for line in configFile:lines() do
-		if not (string_startsWith(line, "[") and string_endsWith(line, "]")) then
-			line = string_gsub(line, "\n", "")
-			line = string_gsub(line, "\r", "")
-			if line ~= "" and string_find(line, "=") then
-				line = string_split(line, "=")
-				config[line[1]] = line[2]
+local config_RegExHighlightRed
+do
+	
+	local function string_split(inputstr,sep)
+		sep = sep or "%s" local t,n={},0
+		for str in string_gmatch(inputstr, "([^"..sep.."]+)") do
+			n=n+1 t[n]=str
+		end
+	return t end
+	
+	local config, configFile = {}, io_open("JM36_Stand_Console.ini")
+	if configFile then
+		local function string_endsWith(str, ending)
+			return ending == "" or str:sub(-#ending) == ending
+		end
+		local function string_startsWith(str, start)
+			return str:sub(1, #start) == start
+		end
+		for line in configFile:lines() do
+			if not (string_startsWith(line, "[") and string_endsWith(line, "]")) then
+				line = string_gsub(line, "\n", "")
+				line = string_gsub(line, "\r", "")
+				if line ~= "" and string_find(line, "=") then
+					line = string_split(line, "=")
+					config[line[1]] = line[2]
+				end
 			end
 		end
+		configFile:close()
 	end
-	configFile:close()
-end
+	
+	config_RegExHighlightRed = string_split(config.RegExHighlightRed or " Marking , as modder for ,] Blocked , blocked from , crash from , is spectating , Exception ,0x, Stack trace:,GTA5+0x,<unknown>", ",")
 
---[[ Failsafe/Backup/Defaults ]]
-local config_StandDirGTA
-do
-	local _config_StandDirGTA = io_popen("powershell [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)")
-	config_StandDirGTA = string_gsub(_config_StandDirGTA:read("*a"), "\n", "").."\\Stand\\"
-	_config_StandDirGTA:close()
 end
-string_endsWith = nil
-local config_PreserveLogs = config.PreserveLogs~="false"
-local config_RegExHighlightRed = string_split(config.RegExHighlightRed or " Marking , as modder for ,] Blocked , blocked from , crash from , is spectating , Exception ,0x, Stack trace:,GTA5+0x,<unknown>", ",")
 local config_RegExHighlightRedNum = #config_RegExHighlightRed
-string_split = nil
-config = nil
 
 
 
@@ -99,6 +94,12 @@ local wrap = coroutine.wrap
 local Loop =
 {
 	wrap(function() -- Logs Display
+		local config_StandDirGTA
+		do
+			local _config_StandDirGTA = io_popen("powershell [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)")
+			config_StandDirGTA = string_gsub(_config_StandDirGTA:read("*a"), "\n", "").."\\Stand\\"
+			_config_StandDirGTA:close()
+		end
 		local logFileStand, logFileStandChat = io_open(config_StandDirGTA.."Log.txt"), io_open(config_StandDirGTA.."Chat.txt")
 		if not IsOpen_GTA then
 			for line in logFileStand:lines() do end
