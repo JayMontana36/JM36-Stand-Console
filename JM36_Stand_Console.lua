@@ -1,6 +1,6 @@
 --[[ Init - Localize Functions ]]
-local io_write, print, string_format, os_date, io_open, io_popen, string_find
-	= io.write, print, string.format, os.date, io.open, io.popen, string.find
+local print, string_format, os_date, io_open, io_popen, string_find
+	= print, string.format, os.date, io.open, io.popen, string.find
 
 
 
@@ -9,32 +9,25 @@ local ansicolors = {}
 do
 	local a=pairs;local b=tostring;local c=setmetatable;local d=string.char;local e={}function e:__tostring()return self.value end;function e:__concat(f)return b(self)..b(f)end;function e:__call(g)return self..g..ansicolors.reset end;e.__metatable={}local function h(i)return c({value=d(27)..'['..b(i)..'m'},e)end;local j={reset=0,clear=0,bright=1,dim=2,underscore=4,blink=5,reverse=7,hidden=8,black=30,red=31,green=32,yellow=33,blue=34,magenta=35,cyan=36,white=37,onblack=40,onred=41,ongreen=42,onyellow=43,onblue=44,onmagenta=45,oncyan=46,onwhite=47}for k,l in a(j)do ansicolors[k]=h(l)end
 end
-local _reset, _white, _black = ansicolors.reset.value, ansicolors.white.value, ansicolors.black.value
 
-local _onblack = ansicolors.onblack.value
-local _ColorDefault = string_format("%s%s%s", _reset, _onblack, _white)
-local function ColorDefault()
-	io_write(_ColorDefault)
-end
-local _onblue = ansicolors.onblue.value
-local _ColorBlue = string_format("%s%s%s", _reset, _onblue, _white)
-local function ColorBlue()
-	io_write(_ColorBlue)
-end
-local _onred = ansicolors.onred.value
-local _ColorRed = string_format("%s%s%s", _reset, _onred, _white)
-local function ColorRed()
-	io_write(_ColorRed)
-end
-local _onyellow = ansicolors.onyellow.value
-local _ColorYellow = string_format("%s%s%s", _reset, _onyellow, _black)
-local function ColorYellow()
-	io_write(_ColorYellow)
-end
-local _ongreen = ansicolors.ongreen.value
-local _ColorGreen = string_format("%s%s%s", _reset, _ongreen, _black)
-local function ColorGreen()
-	io_write(_ColorGreen)
+local ColorDefault = {self=0}
+local ColorBlue = {self=0}
+local ColorRed = {self=0}
+local ColorYellow = {self=0}
+local ColorGreen = {self=0}
+do
+	local io_write = io.write
+	local metatable = {__call = function(self) io_write(self.self) end}
+	
+	local setmetatable = setmetatable
+	
+	local _reset, _white, _black = ansicolors.reset.value, ansicolors.white.value, ansicolors.black.value
+	
+	ColorDefault.self	= string_format("%s%s%s", _reset, ansicolors.onblack.value, _white)		setmetatable(ColorDefault,	metatable)
+	ColorBlue.self		= string_format("%s%s%s", _reset, ansicolors.onblue.value, _white)		setmetatable(ColorBlue,		metatable)
+	ColorRed.self		= string_format("%s%s%s", _reset, ansicolors.onred.value, _white)		setmetatable(ColorRed,		metatable)
+	ColorYellow.self	= string_format("%s%s%s", _reset, ansicolors.onyellow.value, _black)	setmetatable(ColorYellow,	metatable)
+	ColorGreen.self		= string_format("%s%s%s", _reset, ansicolors.ongreen.value, _black)		setmetatable(ColorGreen,	metatable)
 end
 
 
