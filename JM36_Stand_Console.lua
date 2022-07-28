@@ -5,8 +5,10 @@ local io_write, print, string_format, os_date, io_open, io_popen, string_find
 
 
 --[[ Init - Color Functions ]]
-local pairs=pairs;local tostring=tostring;local setmetatable=setmetatable;local a=string.char;local b={}local c={}function c:__tostring()return self.value end;function c:__concat(d)return tostring(self)..tostring(d)end;function c:__call(e)return self..e..b.reset end;c.__metatable={}local function f(g)return setmetatable({value=a(27)..'['..tostring(g)..'m'},c)end;local h={reset=0,clear=0,bright=1,dim=2,underscore=4,blink=5,reverse=7,hidden=8,black=30,red=31,green=32,yellow=33,blue=34,magenta=35,cyan=36,white=37,onblack=40,onred=41,ongreen=42,onyellow=43,onblue=44,onmagenta=45,oncyan=46,onwhite=47}for i,j in pairs(h)do b[i]=f(j)end--ansicolors mini
-local ansicolors = b
+local ansicolors = {}
+do
+	local a=pairs;local b=tostring;local c=setmetatable;local d=string.char;local e={}function e:__tostring()return self.value end;function e:__concat(f)return b(self)..b(f)end;function e:__call(g)return self..g..ansicolors.reset end;e.__metatable={}local function h(i)return c({value=d(27)..'['..b(i)..'m'},e)end;local j={reset=0,clear=0,bright=1,dim=2,underscore=4,blink=5,reverse=7,hidden=8,black=30,red=31,green=32,yellow=33,blue=34,magenta=35,cyan=36,white=37,onblack=40,onred=41,ongreen=42,onyellow=43,onblue=44,onmagenta=45,oncyan=46,onwhite=47}for k,l in a(j)do ansicolors[k]=h(l)end
+end
 local _reset, _white, _black = ansicolors.reset.value, ansicolors.white.value, ansicolors.black.value
 
 local _onblack = ansicolors.onblack.value
