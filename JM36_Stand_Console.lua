@@ -137,12 +137,16 @@ local Loop <const> =
 			if IsOpen_GTA then
 				for line in logFileStand:lines() do
 					if string_find(line, " from ") then
-						line = string_split(line, ": ")[1]
+						line = string_split(line, ":")
+						for i=4,#line do
+							line[i]=nil
+						end
+						line = table_concat(line, ":")
 					end
 					
-					local lineInfo = string_split(line, "] ")
+					local lineInfo = string_split(line, "]") -- local lineInfo = string_split(line, "]")[2]
 					table_remove(lineInfo, 1)
-					lineInfo = table_concat(lineInfo, "] ")
+					lineInfo = table_concat(lineInfo, "]")
 					
 					if lineInfo ~= lineLastPrint then
 						local Hostile
