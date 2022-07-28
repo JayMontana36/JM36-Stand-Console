@@ -70,7 +70,8 @@ do
 		configFile:close()
 	end
 	
-	config_RegExHighlightRed = string_split(config.RegExHighlightRed or " Marking , as modder for ,] Blocked , blocked from , crash from , is spectating , Exception ,0x, Stack trace:,GTA5%+0x,<unknown>, ---- ,---- ERROR INFORMATION BEGINS ----,Type:,Uncaught,ACCESS_VIOLATION,%(GTA5.exe%+,Stack Trace:,%(KERNEL32.DLL%+,BaseThreadInitThunk,%(ntdll.dll%+,RtlUserThreadStart,---- ERROR INFORMATION ENDS ----,Event:,EVENT:,triggered a modder detection:,Crash Event,Kick Event,Modded Event,Invite from,Freeze from,Invalid model sync by,Caught an exception%.,%.dll,%.exe,  0", ",")
+	-- Comma Separated Values - Highlights matches from logs in red
+	config_RegExHighlightRed = string_split(config.RegExHighlightRed or " Marking , as modder for ,] Blocked , blocked from , crash from , is spectating , Exception ,0x, Stack trace:,GTA5%+0x,<unknown>, ---- ,---- ERROR INFORMATION BEGINS ----,Type:,Uncaught,ACCESS_VIOLATION,%(GTA5.exe%+,Stack Trace:,%(KERNEL32.DLL%+,BaseThreadInitThunk,%(ntdll.dll%+,RtlUserThreadStart,---- ERROR INFORMATION ENDS ----,Event:,EVENT:,triggered a modder detection:,Crash Event,Kick Event,Modded Event,Invite from,Freeze from,Invalid model sync by,Caught an exception%.,%.dll,%.exe,  0", ",") -- Magic Characters: ( ) . % + - * ? [ ^ $ - Magic Character Escape: %
 
 end
 local config_RegExHighlightRedNum = #config_RegExHighlightRed
