@@ -1,6 +1,6 @@
 --[[ Init - Localize Functions ]]
-local print, string_format, os_date, io_open, io_popen, string_find
-	= print, string.format, os.date, io.open, io.popen, string.find
+local print, string_format, os_date, string_find
+	= print, string.format, os.date, string.find
 
 
 
@@ -49,7 +49,7 @@ do
 		end
 	return t end
 	
-	local config, configFile = {}, io_open("JM36_Stand_Console.ini")
+	local config, configFile = {}, io.open("JM36_Stand_Console.ini")
 	if configFile then
 		local function string_endsWith(str, ending)
 			return ending == "" or str:sub(-#ending) == ending
@@ -92,11 +92,11 @@ local Loop =
 	wrap(function() -- Logs Display
 		local config_StandDirGTA
 		do
-			local _config_StandDirGTA = io_popen("powershell [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)")
+			local _config_StandDirGTA = io.popen("powershell [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)")
 			config_StandDirGTA = string.gsub(_config_StandDirGTA:read("*a"), "\n", "").."\\Stand\\"
 			_config_StandDirGTA:close()
 		end
-		local logFileStand, logFileStandChat = io_open(config_StandDirGTA.."Log.txt"), io_open(config_StandDirGTA.."Chat.txt")
+		local logFileStand, logFileStandChat = io.open(config_StandDirGTA.."Log.txt"), io.open(config_StandDirGTA.."Chat.txt")
 		if not IsOpen_GTA then
 			for line in logFileStand:lines() do end
 			for line in logFileStandChat:lines() do end
@@ -125,7 +125,7 @@ local Loop =
 		end
 	end),
 	function() -- Detect Game
-		local _IsOpen_GTA = io_popen('tasklist | findstr GTA5.exe')
+		local _IsOpen_GTA = io.popen('tasklist | findstr GTA5.exe')
 		IsOpen_GTA = string_find(_IsOpen_GTA:read("*a"), "GTA5.exe")
 		_IsOpen_GTA:close()
 	end,
