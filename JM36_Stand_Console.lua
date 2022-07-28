@@ -73,7 +73,7 @@ end
 
 --[[ Failsafe/Backup/Defaults ]]
 local config_StandDirGTA
-if true then
+do
 	local _config_StandDirGTA = io_popen("powershell [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)")
 	config_StandDirGTA = string_gsub(_config_StandDirGTA:read("*a"), "\n", "").."\\Stand\\"
 	_config_StandDirGTA:close()
@@ -89,46 +89,71 @@ config = nil
 
 --[[ What's currently running ]]
 local IsOpen_GTA
-local function IsOpenUpdate()
-	local _IsOpen_GTA = io_popen('tasklist | findstr GTA5.exe')
-	IsOpen_GTA = string_find(_IsOpen_GTA:read("*a"), "GTA5.exe")
-	_IsOpen_GTA:close()
-end
 
 
 
 --[[ Core/Loop ]]
-local logFileStand, logFileStandChat = io_open(config_StandDirGTA.."Log.txt"), io_open(config_StandDirGTA.."Chat.txt")
-if not IsOpen_GTA then
-	for line in logFileStand:lines() do end
-	for line in logFileStandChat:lines() do end
-end
+local coroutine = coroutine
+local yield = coroutine.yield
+local wrap = coroutine.wrap
+local Loop =
+{
+	wrap(function() -- Logs Display
+		local logFileStand, logFileStandChat = io_open(config_StandDirGTA.."Log.txt"), io_open(config_StandDirGTA.."Chat.txt")
+		if not IsOpen_GTA then
+			for line in logFileStand:lines() do end
+			for line in logFileStandChat:lines() do end
+		end
+		local yield = yield
+		while true do
+--			if IsOpen_GTA then
+				for line in logFileStand:lines() do
+					local Hostile
+					for i=1, config_RegExHighlightRedNum do
+						if string_find(line, config_RegExHighlightRed[i]) then
+							Hostile = true
+						break end
+					end
+					if not Hostile then
+						print(line)
+					else
+						ColorRed() print(line) ColorDefault()
+					end
+				end
+				for line in logFileStandChat:lines() do
+					print(line)
+				end
+--			end
+			yield()
+		end
+	end),
+	function() -- Detect Game
+		local _IsOpen_GTA = io_popen('tasklist | findstr GTA5.exe')
+		IsOpen_GTA = string_find(_IsOpen_GTA:read("*a"), "GTA5.exe")
+		_IsOpen_GTA:close()
+	end,
+	wrap(function()
+		local WasOpen_GTA = IsOpen_GTA
+		local yield = yield
+		while true do
+			if IsOpen_GTA ~= WasOpen_GTA then
+				if not IsOpen_GTA then
+					ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Lost Grand Theft Auto V", os_date()), "\n") ColorDefault()
+					
+					ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Running Solo | Press [ENTER] To Recommence", os_date()), "\n") ColorDefault()
+					if not io_read() then os_exit() end
+					ColorGreen() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Resumed", os_date()), "\n") ColorDefault()
+				end
+				WasOpen_GTA = IsOpen_GTA
+			end
+			yield()
+		end
+	end),
+}
+
+local LoopNum = #Loop
 while true do
-	if IsOpen_GTA then
-		for line in logFileStand:lines() do
-			local Hostile
-			for i=1, config_RegExHighlightRedNum do
-				if string_find(line, config_RegExHighlightRed[i]) then
-					Hostile = true
-				break end
-			end
-			if not Hostile then
-				print(line)
-			else
-				ColorRed() print(line) ColorDefault()
-			end
-		end
-		for line in logFileStandChat:lines() do
-			print(line)
-		end
-	end
-	IsOpenUpdate()
-	if not IsOpen_GTA and logFileFrontier then
-		ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Lost Grand Theft Auto V", os_date()), "\n") ColorDefault()
-	end
-	if not IsOpen_GTA then
-		ColorYellow() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Running Solo | Press [ENTER] To Recommence", os_date()), "\n") ColorDefault()
-		if not io_read() then os_exit() end
-		ColorGreen() print("\n", string_format("[ JM36 Stand Console ] - %s - Wrapper Resumed", os_date()), "\n") ColorDefault()
+	for i=1, LoopNum do
+		Loop[i]()
 	end
 end
